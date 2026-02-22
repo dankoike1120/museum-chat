@@ -56,7 +56,6 @@ export default function ObjectForm({ object }: Props) {
       }
     });
 
-    // Pass existing image URLs for edit mode
     if (object) {
       object.image_urls.forEach((url, i) => {
         formData.append(`existing_image_${i}`, url);
@@ -84,7 +83,7 @@ export default function ObjectForm({ object }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           立体物名 *
         </label>
         <input
@@ -92,13 +91,13 @@ export default function ObjectForm({ object }: Props) {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-gold/50 transition-all duration-200"
           placeholder="例: 縄文土器"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-text-secondary mb-2">
           写真（3視点） *
         </label>
         <div className="flex gap-4">
@@ -115,33 +114,33 @@ export default function ObjectForm({ object }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           会話のトンマナ（キャラクター設定）
         </label>
         <textarea
           value={tone}
           onChange={(e) => setTone(e.target.value)}
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-gold/50 transition-all duration-200"
           placeholder="例: 古風な口調で話す。「〜でござる」などの語尾を使う。"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           事前情報/ナレッジ
         </label>
         <textarea
           value={knowledge}
           onChange={(e) => setKnowledge(e.target.value)}
           rows={6}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-gold/50 transition-all duration-200"
           placeholder="この立体物に関する詳しい情報を入力してください..."
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-text-secondary mb-2">
           初回の質問選択肢（最大3つ）
         </label>
         {questions.map((q, i) => (
@@ -150,7 +149,7 @@ export default function ObjectForm({ object }: Props) {
             type="text"
             value={q}
             onChange={(e) => handleQuestionChange(i, e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 mb-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-gold/50 transition-all duration-200"
             placeholder={`質問 ${i + 1}`}
           />
         ))}
@@ -160,14 +159,14 @@ export default function ObjectForm({ object }: Props) {
         <button
           type="submit"
           disabled={saving}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="bg-gold text-dark px-6 py-2 rounded-lg font-semibold hover:bg-gold-dark disabled:opacity-50 transition-all duration-200"
         >
           {saving ? "保存中..." : object ? "更新する" : "登録する"}
         </button>
         <button
           type="button"
           onClick={() => router.push("/admin")}
-          className="border border-gray-300 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          className="border border-dark-border text-text-secondary px-6 py-2 rounded-lg hover:bg-dark-card transition-all duration-200"
         >
           キャンセル
         </button>

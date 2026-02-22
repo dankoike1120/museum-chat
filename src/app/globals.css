@@ -1,9 +1,35 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Lato', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+  --color-gold: #ffae01;
+  --color-gold-dark: #e69d00;
+  --color-gold-light: #ffc940;
+  --color-dark: #0a0a0a;
+  --color-dark-secondary: #111111;
+  --color-dark-card: #1a1a1a;
+  --color-dark-border: #2a2a2a;
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #999999;
+  --color-text-muted: #777777;
 }
 
 body {
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-dark);
+  color: var(--color-text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-dark-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-border);
+  border-radius: 2px;
 }

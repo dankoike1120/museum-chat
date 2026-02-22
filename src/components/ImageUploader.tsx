@@ -31,11 +31,11 @@ export default function ImageUploader({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-sm font-medium text-text-secondary">{label}</span>
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors"
+        className="w-32 h-32 border border-dark-border rounded-lg flex items-center justify-center overflow-hidden hover:border-gold/50 transition-all duration-200 bg-dark-secondary"
       >
         {preview ? (
           <Image
@@ -46,7 +46,7 @@ export default function ImageUploader({
             className="object-cover w-full h-full"
           />
         ) : (
-          <span className="text-gray-400 text-3xl">+</span>
+          <span className="text-text-muted text-3xl">+</span>
         )}
       </button>
       <input

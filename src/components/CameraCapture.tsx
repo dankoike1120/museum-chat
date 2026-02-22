@@ -16,7 +16,6 @@ export default function CameraCapture({ onCapture, loading }: Props) {
   const [streamRef, setStreamRef] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // streamRefが変わったらvideoにセット
   useEffect(() => {
     if (streamRef && videoRef.current) {
       videoRef.current.srcObject = streamRef;
@@ -82,20 +81,20 @@ export default function CameraCapture({ onCapture, loading }: Props) {
             autoPlay
             playsInline
             muted
-            className="w-full max-w-md rounded-2xl shadow-lg"
+            className="w-full max-w-md rounded-lg border border-dark-border shadow-2xl"
           />
           <canvas ref={canvasRef} className="hidden" />
           <div className="flex gap-3">
             <button
               onClick={takePhoto}
               disabled={loading}
-              className="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
+              className="bg-gold text-dark px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gold-dark disabled:opacity-50 transition-all duration-200"
             >
               撮影する
             </button>
             <button
               onClick={stopCamera}
-              className="border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-50 transition-colors"
+              className="border border-dark-border text-text-secondary px-6 py-3 rounded-lg hover:bg-dark-card transition-all duration-200"
             >
               閉じる
             </button>
@@ -103,9 +102,9 @@ export default function CameraCapture({ onCapture, loading }: Props) {
         </>
       ) : (
         <div className="flex flex-col items-center gap-4 w-full max-w-md">
-          <div className="w-full aspect-square bg-gray-100 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
+          <div className="w-full aspect-square bg-dark-secondary rounded-lg flex flex-col items-center justify-center border border-dark-border">
             <svg
-              className="w-16 h-16 text-gray-400 mb-3"
+              className="w-16 h-16 text-text-muted mb-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -113,17 +112,17 @@ export default function CameraCapture({ onCapture, loading }: Props) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={1.5}
+                strokeWidth={1}
                 d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
               />
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={1.5}
+                strokeWidth={1}
                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <p className="text-gray-500 text-center px-4">
+            <p className="text-text-muted text-center px-4 text-sm">
               展示物の写真を撮影して
               <br />
               会話を始めましょう
@@ -131,37 +130,33 @@ export default function CameraCapture({ onCapture, loading }: Props) {
           </div>
 
           {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
+            <p className="text-red-400 text-sm text-center">{error}</p>
           )}
 
-          {/* スマホ: ネイティブカメラで撮影 */}
           <button
             onClick={() => cameraInputRef.current?.click()}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-full text-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
+            className="w-full bg-gold text-dark py-3 rounded-lg text-lg font-semibold hover:bg-gold-dark disabled:opacity-50 transition-all duration-200"
           >
             {loading ? "認識中..." : "写真を撮影"}
           </button>
 
-          {/* ブラウザ内カメラプレビュー */}
           <button
             onClick={startCamera}
             disabled={loading}
-            className="w-full border border-blue-300 text-blue-600 py-3 rounded-full text-lg hover:bg-blue-50 disabled:opacity-50 transition-colors"
+            className="w-full border border-gold/40 text-gold py-3 rounded-lg text-lg hover:bg-gold/10 disabled:opacity-50 transition-all duration-200"
           >
             カメラプレビュー
           </button>
 
-          {/* ライブラリから選択 */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading}
-            className="w-full border border-gray-300 py-3 rounded-full text-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            className="w-full border border-dark-border text-text-secondary py-3 rounded-lg text-lg hover:bg-dark-card disabled:opacity-50 transition-all duration-200"
           >
             ライブラリから選択
           </button>
 
-          {/* スマホネイティブカメラ起動用 */}
           <input
             ref={cameraInputRef}
             type="file"
@@ -170,8 +165,6 @@ export default function CameraCapture({ onCapture, loading }: Props) {
             className="hidden"
             onChange={handleFileUpload}
           />
-
-          {/* ライブラリ選択用 */}
           <input
             ref={fileInputRef}
             type="file"

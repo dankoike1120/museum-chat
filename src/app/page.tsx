@@ -47,7 +47,7 @@ export default function Home() {
   // Chat phase
   if (identifiedObject) {
     return (
-      <div className="h-dvh flex flex-col">
+      <div className="h-dvh flex flex-col bg-dark">
         <ChatWindow object={identifiedObject} onReset={handleReset} />
       </div>
     );
@@ -55,16 +55,20 @@ export default function Home() {
 
   // Capture phase
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-6">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Museum Chat</h1>
-        <p className="text-gray-600">展示物を撮影して会話しよう</p>
+    <div className="min-h-dvh bg-dark flex flex-col items-center justify-center p-6">
+      <div className="text-center mb-10">
+        <h1 className="font-[family-name:var(--font-heading)] text-3xl font-bold text-gold tracking-wider uppercase mb-2">
+          Museum Chat
+        </h1>
+        <p className="text-text-secondary text-sm tracking-wide">
+          展示物を撮影して会話しよう
+        </p>
       </div>
 
       <CameraCapture onCapture={handleCapture} loading={loading} />
 
       {error && (
-        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm max-w-md w-full text-center">
+        <div className="mt-4 bg-dark-card border border-red-900/50 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md w-full text-center">
           {error}
         </div>
       )}

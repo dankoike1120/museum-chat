@@ -15,7 +15,6 @@ type Props = {
   onReset: () => void;
 };
 
-// 文単位でキューに追加して読み上げ（cancelしない）
 function speakSentence(text: string) {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   const utterance = new SpeechSynthesisUtterance(text);
@@ -28,7 +27,6 @@ function speakSentence(text: string) {
   window.speechSynthesis.speak(utterance);
 }
 
-// 文の区切り文字で分割（区切り文字を含む）
 const SENTENCE_DELIMITERS = /([。！？\n])/;
 
 export default function ChatWindow({ object, onReset }: Props) {
@@ -39,7 +37,6 @@ export default function ChatWindow({ object, onReset }: Props) {
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 音声リストを事前にロード（一部ブラウザで必要）
   useEffect(() => {
     window.speechSynthesis?.getVoices();
     return () => { window.speechSynthesis?.cancel(); };
@@ -79,7 +76,7 @@ export default function ChatWindow({ object, onReset }: Props) {
         if (!reader) throw new Error("No reader");
 
         let assistantContent = "";
-        let unspokenBuffer = ""; // まだ読み上げていないテキスト
+        let unspokenBuffer = "";
         setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
         while (true) {
@@ -106,13 +103,9 @@ export default function ChatWindow({ object, onReset }: Props) {
                   return updated;
                 });
 
-                // 文の区切りが来たら、そこまでを読み上げ
                 if (ttsEnabled) {
                   const parts = unspokenBuffer.split(SENTENCE_DELIMITERS);
-                  // 最後の要素は未完成の文の可能性があるので残す
                   if (parts.length >= 3) {
-                    // 区切り文字で分割すると [文, 区切り, 残り, ...] になる
-                    // 完成した文をすべて読み上げ
                     let toSpeak = "";
                     let i = 0;
                     while (i + 1 < parts.length) {
@@ -122,7 +115,6 @@ export default function ChatWindow({ object, onReset }: Props) {
                     if (toSpeak.trim()) {
                       speakSentence(toSpeak);
                     }
-                    // 残りのバッファ（未完成の文）
                     unspokenBuffer = i < parts.length ? parts[i] : "";
                   }
                 }
@@ -133,7 +125,6 @@ export default function ChatWindow({ object, onReset }: Props) {
           }
         }
 
-        // 残りのバッファを読み上げ
         if (ttsEnabled && unspokenBuffer.trim()) {
           speakSentence(unspokenBuffer);
         }
@@ -156,12 +147,14 @@ export default function ChatWindow({ object, onReset }: Props) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-dark">
       {/* Header */}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between shrink-0">
+      <div className="bg-dark-secondary border-b border-dark-border px-4 py-3 flex items-center justify-between shrink-0">
         <div>
-          <h2 className="font-bold text-gray-900">{object.name}</h2>
-          <p className="text-xs text-gray-500">と会話中</p>
+          <h2 className="font-[family-name:var(--font-heading)] font-semibold text-gold tracking-wide">
+            {object.name}
+          </h2>
+          <p className="text-xs text-text-muted">と会話中</p>
         </div>
         <div className="flex gap-2 items-center">
           <button
@@ -169,10 +162,10 @@ export default function ChatWindow({ object, onReset }: Props) {
               setTtsEnabled(!ttsEnabled);
               if (ttsEnabled) window.speechSynthesis?.cancel();
             }}
-            className={`text-lg px-2 py-1 rounded-lg border transition-colors ${
+            className={`text-lg px-2 py-1 rounded-lg border transition-all duration-200 ${
               ttsEnabled
-                ? "border-blue-300 bg-blue-50 text-blue-600"
-                : "border-gray-200 text-gray-400"
+                ? "border-gold/40 bg-gold/10 text-gold"
+                : "border-dark-border text-text-muted"
             }`}
             title={ttsEnabled ? "読み上げON" : "読み上げOFF"}
           >
@@ -183,7 +176,7 @@ export default function ChatWindow({ object, onReset }: Props) {
               window.speechSynthesis?.cancel();
               onReset();
             }}
-            className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 border border-gray-200 rounded-lg"
+            className="text-sm text-text-muted hover:text-text-primary px-3 py-1 border border-dark-border rounded-lg hover:bg-dark-card transition-all duration-200"
           >
             別の展示物
           </button>
@@ -207,7 +200,7 @@ export default function ChatWindow({ object, onReset }: Props) {
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="border-t bg-white px-4 py-3 flex gap-2 shrink-0"
+        className="border-t border-dark-border bg-dark-secondary px-4 py-3 flex gap-2 shrink-0"
       >
         <input
           type="text"
@@ -215,12 +208,12 @@ export default function ChatWindow({ object, onReset }: Props) {
           onChange={(e) => setInput(e.target.value)}
           placeholder="メッセージを入力..."
           disabled={streaming}
-          className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="flex-1 bg-dark-card border border-dark-border rounded-lg px-4 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-gold/50 disabled:opacity-50 transition-all duration-200"
         />
         <button
           type="submit"
           disabled={streaming || !input.trim()}
-          className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="bg-gold text-dark px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gold-dark disabled:opacity-50 transition-all duration-200"
         >
           送信
         </button>
