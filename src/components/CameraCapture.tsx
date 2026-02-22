@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 
 type Props = {
   onCapture: (imageBase64: string, mediaType: string) => void;
@@ -11,21 +11,30 @@ export default function CameraCapture({ onCapture, loading }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [streaming, setStreaming] = useState(false);
   const [streamRef, setStreamRef] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // streamRefが変わったらvideoにセット
+  useEffect(() => {
+    if (streamRef && videoRef.current) {
+      videoRef.current.srcObject = streamRef;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [streamRef, streaming]);
 
   const startCamera = useCallback(async () => {
+    setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setStreamRef(stream);
-        setStreaming(true);
-      }
-    } catch {
-      alert("カメラへのアクセスが許可されていません");
+      setStreamRef(stream);
+      setStreaming(true);
+    } catch (e) {
+      console.error("Camera error:", e);
+      setError("カメラを起動できませんでした。「写真を撮影」ボタンをお試しください。");
     }
   }, []);
 
@@ -33,8 +42,8 @@ export default function CameraCapture({ onCapture, loading }: Props) {
     if (streamRef) {
       streamRef.getTracks().forEach((t) => t.stop());
       setStreamRef(null);
-      setStreaming(false);
     }
+    setStreaming(false);
   }, [streamRef]);
 
   const takePhoto = useCallback(() => {
@@ -72,6 +81,7 @@ export default function CameraCapture({ onCapture, loading }: Props) {
             ref={videoRef}
             autoPlay
             playsInline
+            muted
             className="w-full max-w-md rounded-2xl shadow-lg"
           />
           <canvas ref={canvasRef} className="hidden" />
@@ -120,22 +130,48 @@ export default function CameraCapture({ onCapture, loading }: Props) {
             </p>
           </div>
 
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
+
+          {/* スマホ: ネイティブカメラで撮影 */}
           <button
-            onClick={startCamera}
+            onClick={() => cameraInputRef.current?.click()}
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-full text-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
           >
-            {loading ? "認識中..." : "カメラで撮影"}
+            {loading ? "認識中..." : "写真を撮影"}
           </button>
 
+          {/* ブラウザ内カメラプレビュー */}
+          <button
+            onClick={startCamera}
+            disabled={loading}
+            className="w-full border border-blue-300 text-blue-600 py-3 rounded-full text-lg hover:bg-blue-50 disabled:opacity-50 transition-colors"
+          >
+            カメラプレビュー
+          </button>
+
+          {/* ライブラリから選択 */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading}
             className="w-full border border-gray-300 py-3 rounded-full text-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
           >
-            写真を選択
+            ライブラリから選択
           </button>
 
+          {/* スマホネイティブカメラ起動用 */}
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+
+          {/* ライブラリ選択用 */}
           <input
             ref={fileInputRef}
             type="file"
