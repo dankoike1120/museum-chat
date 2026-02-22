@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   // Fetch all registered objects
   const { data: objects, error } = await supabase
     .from("objects")
-    .select("id, name, image_urls");
+    .select("id, name, knowledge");
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

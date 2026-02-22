@@ -2,27 +2,16 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic();
 
-async function fetchImageAsBase64(
-  url: string
-): Promise<{ data: string; mediaType: string } | null> {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const buffer = await res.arrayBuffer();
-    const data = Buffer.from(buffer).toString("base64");
-    const mediaType = res.headers.get("content-type") || "image/jpeg";
-    return { data, mediaType };
-  } catch {
-    return null;
-  }
-}
-
 export async function identifyObject(
   userImageBase64: string,
   userImageMediaType: "image/jpeg" | "image/png" | "image/webp" | "image/gif",
-  objects: { id: string; name: string; image_urls: string[] }[]
+  objects: { id: string; name: string; knowledge: string }[]
 ): Promise<{ id: string; name: string } | null> {
-  // Build content blocks: user photo + all registered object photos
+  // 登録済みオブジェクトのリストをテキストで作成
+  const objectList = objects
+    .map((obj) => `- ID: ${obj.id} / 名前: ${obj.name} / 説明: ${obj.knowledge.slice(0, 100)}`)
+    .join("\n");
+
   const content: Anthropic.MessageCreateParams["messages"][0]["content"] = [
     {
       type: "image",
@@ -30,36 +19,17 @@ export async function identifyObject(
     },
     {
       type: "text",
-      text: "上の画像はユーザーが撮影した立体物の写真です。以下に登録済みの立体物の写真を提示します。ユーザーの写真と最も一致する立体物を特定してください。",
-    },
-  ];
+      text: `この写真に写っている物体を特定してください。
 
-  for (const obj of objects) {
-    content.push({
-      type: "text",
-      text: `\n--- 立体物: ${obj.name} (ID: ${obj.id}) ---`,
-    });
-    for (const url of obj.image_urls) {
-      const img = await fetchImageAsBase64(url);
-      if (img) {
-        content.push({
-          type: "image",
-          source: {
-            type: "base64",
-            media_type: img.mediaType as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
-            data: img.data,
-          },
-        });
-      }
-    }
-  }
+以下は登録済みの立体物のリストです:
+${objectList}
 
-  content.push({
-    type: "text",
-    text: `一致する立体物のIDと名前をJSON形式で返してください。一致するものがない場合は null を返してください。
+この写真に最も一致する立体物のIDと名前をJSON形式で返してください。
+一致するものがない場合は null を返してください。
 フォーマット: {"id": "xxx", "name": "xxx"} または null
 JSONのみを返し、他のテキストは含めないでください。`,
-  });
+    },
+  ];
 
   try {
     const response = await anthropic.messages.create({
@@ -71,11 +41,9 @@ JSONのみを返し、他のテキストは含めないでください。`,
     const text = response.content[0].type === "text" ? response.content[0].text.trim() : "";
     console.log("Claude identify response:", text);
 
-    // Extract JSON from response (may be wrapped in markdown code block)
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       if (text === "null" || text.includes("null")) return null;
-      console.log("No JSON found in response");
       return null;
     }
 
