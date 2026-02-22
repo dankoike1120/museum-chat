@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { anthropic, buildSystemPrompt } from "@/lib/claude";
 import { searchGoogle } from "@/lib/google-search";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   const { messages, objectName, tone, knowledge, searchQuery } =
     await request.json();

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { identifyObject } from "@/lib/claude";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   const supabase = createServiceClient();
 
